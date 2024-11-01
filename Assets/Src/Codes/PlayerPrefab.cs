@@ -14,6 +14,9 @@ public class PlayerPrefab : MonoBehaviour
     private uint playerId;
     TextMeshPro myText;
 
+    private float interpolationStartTime;
+    private const float InterpolationDuration = 0.1f;
+
     void Awake()
     {
         anim = GetComponent<Animator>();
@@ -24,8 +27,8 @@ public class PlayerPrefab : MonoBehaviour
     public void Init(uint playerId, string id)
     {
         anim.runtimeAnimatorController = animCon[playerId];
-        lastPosition = Vector3.zero;
-        currentPosition = Vector3.zero;
+        lastPosition = transform.position;
+        currentPosition = transform.position;
         this.playerId = playerId;
 
         if (id.Length > 5)
@@ -44,22 +47,30 @@ public class PlayerPrefab : MonoBehaviour
         anim.runtimeAnimatorController = animCon[playerId];
     }
 
+    // Easing function
+    private float EaseInOutQuad(float x)
+    {
+        return x < 0.5f ? 2f * x * x : 1f - Mathf.Pow(-2f * x + 2f, 2f) / 2f;
+    }
+
     // 서버로부터 위치 업데이트를 수신할 때 호출될 메서드
     public void UpdatePosition(float x, float y)
     {
-        lastPosition = currentPosition;
+        lastPosition = transform.position;
         currentPosition = new Vector3(x, y);
-        transform.position = currentPosition;
-
-        UpdateAnimation();
+        interpolationStartTime = Time.time;
     }
 
-    void LateUpdate()
+    void Update()
     {
         if (!GameManager.instance.isLive)
-        {
             return;
-        }
+
+        float elapsed = Time.time - interpolationStartTime;
+        float t = Mathf.Clamp01(elapsed / InterpolationDuration);
+        float easedT = EaseInOutQuad(t);
+
+        transform.position = Vector3.Lerp(lastPosition, currentPosition, easedT);
 
         UpdateAnimation();
     }
@@ -70,8 +81,6 @@ public class PlayerPrefab : MonoBehaviour
         Vector2 inputVec = currentPosition - lastPosition;
 
         anim.SetFloat("Speed", inputVec.magnitude);
-
-        Debug.Log(inputVec);
 
         if (inputVec.x != 0)
         {
