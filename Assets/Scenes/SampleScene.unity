@@ -12151,7 +12151,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isLive: 0
   gameTime: 0
-  targetFrameRate: 30
+  targetFrameRate: 60
   version: 1.0.0
   latency: 50
   playerId: 0
