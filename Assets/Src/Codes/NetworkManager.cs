@@ -26,7 +26,7 @@ public class NetworkManager : MonoBehaviour
     private List<byte> incompleteData = new List<byte>();
     private uint sequence = 0;
 
-    public float pingInterval = 5f; // 핑 전송 간격 (초)
+    public float pingInterval = 1f; // 핑 전송 간격 (초)
     private float pingTimer = 0f;
     private long lastPingTimestamp = 0;
 
