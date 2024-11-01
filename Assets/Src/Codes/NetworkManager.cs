@@ -316,6 +316,14 @@ public class NetworkManager : MonoBehaviour
                 }
                 case (uint)Packets.HandlerIds.Ping:
                 {
+                    Ping ping = new();
+                    ping.timestamp = long.Parse(Packets.ExtractValue(jsonString, "timestamp"));
+                    long currentTimestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+
+                    long rtt = currentTimestamp - ping.timestamp;
+                    long latency = rtt / 2;
+
+                    GameManager.instance.SetLatency(latency);
                     break;
                 }
             }

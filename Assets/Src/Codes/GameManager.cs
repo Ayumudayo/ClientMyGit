@@ -71,4 +71,9 @@ public class GameManager : MonoBehaviour
         }
         gameTime += Time.deltaTime;
     }
+
+    public void SetLatency(long latency)
+    {
+        this.latency = (int) latency;
+    }
 }
